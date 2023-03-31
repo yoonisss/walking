@@ -44,12 +44,14 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:mcv_selectionColor="#5a7fbf"
+        app:mcv_selectionColor="#673AB7"
         app:mcv_headerTextAppearance="@style/CalendarWidgetHeader"
         app:mcv_weekDayTextAppearance="@style/CalendarWidgetWeek"
         app:mcv_dateTextAppearance="@style/CalendarWidgetDay"
         app:mcv_arrowColor="@color/white"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/schedule_Listview"

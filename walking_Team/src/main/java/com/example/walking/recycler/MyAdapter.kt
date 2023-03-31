@@ -21,9 +21,12 @@ import com.google.firebase.ktx.Firebase
 class MyViewHolder(val binding: ItemMainBinding): RecyclerView.ViewHolder(binding.root) {
     var username=""
 
+//    var mainView: View? = null
+
     init {
         val database = Firebase.database
         val myRef = database.getReference("username")
+
 
         myRef.get().addOnSuccessListener {
             username=it.value.toString()
@@ -36,6 +39,8 @@ class MyViewHolder(val binding: ItemMainBinding): RecyclerView.ViewHolder(bindin
         binding.likefill.setOnClickListener{
             binding.likefill.visibility= View.GONE
             binding.likebtn.visibility=View.VISIBLE
+
+
         }
     }
 
@@ -54,13 +59,9 @@ class MyAdapter(val context: Context, val datas: List<Item>?): RecyclerView.Adap
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
             = MyViewHolder(ItemMainBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as MyViewHolder).binding
-
-//        var item: Item = datas?[position] //배열처럼 쓰는걸 권장
-//        //본문글씨중에 html 태그문이 포함되어 있는걸 안보이도록 제거 : HtmlCompat.FROM_HTML_MODE_COMPACT
-//        var ITEMCNTNTS:String = HtmlCompat.fromHtml(item.ITEMCNTNTS, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
-//        holder.binding.maincontent.text = ITEMCNTNTS
 
 
         //add......................................
@@ -68,12 +69,66 @@ class MyAdapter(val context: Context, val datas: List<Item>?): RecyclerView.Adap
         binding.username.text = user?.MAIN_TITLE
         binding.maincontent.text = user?.ITEMCNTNTS
 
-        //본문글씨중에 html 태그문이 포함되어 있는걸 안보이도록 제거 : HtmlCompat.FROM_HTML_MODE_COMPACT
+        val like = datas?.get(position)
+//        binding.likebtn.text = like?.UC_SEQ.toString()
+
+        binding.likeCount.text = "좋아요" + like?.UC_SEQ.toString()
+
+//
+//        // 좋아요 이벤트
+//        MyViewHolder.likebtn.setOnClickListener { likeEvent(position) }
+//
+//        //좋아요 버튼 설정
+//        if (likeDTOs[position].likes.containsKey(FirebaseAuth.getInstance().currentUser!!.uid)) {
+//
+//            MyViewHolder.likebtn.setImageResource(R.drawable.like_fill)
+//
+//        } else {
+//
+//            MyViewHolder.likebtn.setImageResource(R.drawable.like)
+//        }
+//        //좋아요 카운터 설정
+//        MyViewHolder.likeCount.text = "좋아요 " + likeDTOs[position].favoriteCount
+//
+//
+//    }
+//    //좋아요 이벤트 기능
+//    private fun likeEvent(position: Int) {
+//        var auth : FirebaseAuth? = null
+//        var firestore : FirebaseFirestore? = null
+//
+//        auth = FirebaseAuth.getInstance()
+//        firestore = FirebaseFirestore.getInstance()
+//
+//        var tsDoc = firestore?.collection("images")?.document(likeUidList[position])
+//        firestore?.runTransaction { transaction ->
+//
+//            val uid = FirebaseAuth.getInstance().currentUser!!.uid
+//            val likeDTO = transaction.get(tsDoc!!).toObject(LikeDTO::class.java)
+//
+//            if (likeDTO!!.likes.containsKey(uid)) {
+//                // Unstar the post and remove self from stars
+//                likeDTO?.likeCount = likeDTO?.likeCount!! - 1
+//                likeDTO?.likes.remove(uid)
+//
+//            } else {
+//                // Star the post and add self to stars
+//                likeDTO?.likeCount = likeDTO?.likeCount!! + 1
+//                likeDTO?.likes[uid] = true
+////                favoriteAlarm(contentDTOs[position].uid!!)
+//            }
+//            transaction.set(tsDoc, likeDTO)
+//        }
+//    }
+//}
+
+
+        //본문글씨중에 html 태그문이 포함되어 있는걸 안보이도록 제거하는 코드 : HtmlCompat.FROM_HTML_MODE_COMPACT
         var ITEMCNTNTS:String = HtmlCompat.fromHtml(user!!.ITEMCNTNTS, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
         holder.binding.maincontent.text = ITEMCNTNTS
 
 
-
+      //이미지 크기, 화질조정
         val urlImg = user?.MAIN_IMG_THUMB
         Glide.with(context)
             .asBitmap()
@@ -91,7 +146,6 @@ class MyAdapter(val context: Context, val datas: List<Item>?): RecyclerView.Adap
                     TODO("Not yet implemented")
                 }
             })
-
     }
 
 

@@ -22,8 +22,9 @@ data class Item(
     @SerializedName("MAIN_IMG_THUMB")
     val MAIN_IMG_THUMB: String,
     @SerializedName("ITEMCNTNTS")
-    val ITEMCNTNTS: String
-
+    val ITEMCNTNTS: String,
+    @SerializedName("UC_SEQ")
+    val UC_SEQ: Int
 
 
 )

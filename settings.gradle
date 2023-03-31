@@ -16,3 +16,4 @@ rootProject.name = "TeamGit_Test"
 include ':app'
 include ':walking_Team'
 include ':k1109_chc_test'
+include ':test_like'
