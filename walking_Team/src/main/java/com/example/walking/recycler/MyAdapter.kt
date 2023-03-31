@@ -1,4 +1,4 @@
-
+package com.example.walking.recycler
 
 import android.content.Context
 import android.graphics.Bitmap

@@ -6,16 +6,20 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.bumptech.glide.Glide
 import com.example.walking.databinding.ActivityMainBinding
 import com.example.walking.fragment.*
 import com.example.walking.model.User
+
+
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.database.ktx.database
@@ -29,8 +33,7 @@ import retrofit2.Response
 //import retrofit2.Callback
 //import retrofit2.Response
 
-class MainActivity : AppCompatActivity() {
-
+class MainActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 
 
     lateinit var binding: ActivityMainBinding
@@ -38,12 +41,33 @@ class MainActivity : AppCompatActivity() {
     lateinit var nickname: String
     private var TAG: String = "MainActivity"
 
+
+
+
+
+
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //view binding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+
+
+
+        binding.profileImage.setOnClickListener { showPopup(binding.profileImage) }
+
+
+        //스토리지 이미지 다운로드........................
+
+
+
+
+
+
+
 
         //SharedPreference를 이용하여 간단한 데이터들을 저장하고 불러올 수 있다.
         val pref = getSharedPreferences("inputPref", Context.MODE_PRIVATE)
@@ -70,6 +94,21 @@ class MainActivity : AppCompatActivity() {
                 override fun onResponse(call: retrofit2.Call<User>, response: Response<User>) {
                     Log.d("test11","response : $response")
                     nickname = response.body().toString()
+                    var docId = response.body()?.profile_id
+
+
+                    Log.d("docId", nickname)
+                    val imgRef = MyApplication.storage.reference.child("profiles/${docId}.jpg")
+                    imgRef.downloadUrl.addOnCompleteListener{ task ->
+                        if(task.isSuccessful){
+                            Glide.with(this@MainActivity)
+                                .load(task.result)
+                                .into(binding.profileImage)
+                        }
+                    }
+
+
+
 
                     Log.d(TAG, "2=====response.body().toString()========nickname: $nickname")
                 }
@@ -148,6 +187,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setTitle("부산한걸음")
 
 
+
 //        val networkService = (applicationContext as MyApplication).networkService
 //        val tripListCall = networkService.doGetTripList()
 //
@@ -164,7 +204,32 @@ class MainActivity : AppCompatActivity() {
 //                call.cancel()
 //            }
 //        })
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //    // androidx.fragment.app.FragmentActivity
@@ -194,29 +259,49 @@ class MainActivity : AppCompatActivity() {
     // menu/menu.xml 파일에
     // 로그 아웃 이후 로그인 창으로 가는 샘플 코드 잘 알아두기.
     //메뉴 클릭시 이 함수가 호출이 됨.
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_logout -> {
-                Toast.makeText(this@MainActivity, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
-//                Intent(this@MainActivity, LoginActivity::class.java).run {
-//                    startActivity(this)
-                }
-            R.id.user_inf -> {
-                Log.d("walk", "회원정보수정")
-            }
-
-            }
-
-//        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+//            R.id.menu_logout -> {
+//                Toast.makeText(this@MainActivity, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
+////                Intent(this@MainActivity, LoginActivity::class.java).run {
+////                    startActivity(this)
+//                }
+//            R.id.user_inf -> {
+//                Log.d("walk", "회원정보수정")
+//            }
+//
+//            }
+//
+////        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
     // 샘플 코드 거의 똑같음.
     // 툴바 옵션 메뉴 예) 로그아웃.
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return super.onCreateOptionsMenu(menu)
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        menuInflater.inflate(R.menu.menu, menu)
+//        return super.onCreateOptionsMenu(menu)
+//
+//
+//    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when (item?.itemId) { // 메뉴 아이템에 따라 동작 다르게 하기
+            R.id.menu_profile -> Toast.makeText(this, "프로필이 수정되었습니다.", Toast.LENGTH_LONG).show()
+            R.id.menu_update -> Toast.makeText(this, "유저 상세정보", Toast.LENGTH_LONG).show()
+            R.id.menu_logout -> Toast.makeText(this, "로그아웃되었습니다.", Toast.LENGTH_LONG).show()
+        }
+
+        return item != null // 아이템이 null이 아닌 경우 true, null인 경우 false 리턴
     }
+
+    private fun showPopup(v: View) {
+        val popup = PopupMenu(this, v) // PopupMenu 객체 선언
+        popup.menuInflater.inflate(R.menu.profilemenu, popup.menu) // 메뉴 레이아웃 inflate
+        popup.setOnMenuItemClickListener(this)
+        popup.show() // 팝업 보여주기
+    }
+
 }
 
 //viewpager adapter
@@ -227,11 +312,15 @@ class MainViewPagerAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fr
         return when (position) {
             0 -> MainFragment()
             1 -> BoardFragment()
-            2 -> GroupFragment()
+            2 -> MeetingFragment()
             3 -> PhotoFragment()
             else -> PlanFragment()
         }
     }
 }
+
+
+
+
 
 

@@ -1,6 +1,6 @@
 package com.example.walking.fragment
 
-import MyAdapter
+
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.walking.MyApplication2
 import com.example.walking.databinding.FragmentMainBinding
 import com.example.walking.model.Walking
+import com.example.walking.recycler.MyAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
